@@ -44,6 +44,7 @@ function resetAll() {
   hidePriceError();
   result.textContent = "0 €";
   vat.textContent = "0 €";
+  modeLabel.textContent = "";
 }
 
 function parseEuroInput(s) {
@@ -192,6 +193,8 @@ customRateInput.addEventListener("input", () => {
   const val = parseInt(customRateInput.value, 10);
   if (!customRateInput.value) {
     customRateInput.classList.remove("active");
+    rate = null;
+    calcVat();
     return;
   }
   if (val >= 1 && val <= 999) {
@@ -220,11 +223,12 @@ copyBtn.addEventListener("click", () => {
   const raw = result.textContent.replace(/\./g, "").replace(/[€\s]/g, "");
   if (raw === "0" || raw === "") return;
 
+  if (!navigator.clipboard) return;
   navigator.clipboard.writeText(raw).then(() => {
     copyBtn.classList.add("copied");
     clearTimeout(copyTimeout);
     copyTimeout = setTimeout(() => copyBtn.classList.remove("copied"), 1500);
-  });
+  }).catch(() => {});
 });
 
 // ---------- Taschenrechner ----------

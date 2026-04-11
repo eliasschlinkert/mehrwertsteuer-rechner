@@ -7,7 +7,6 @@
 }
 
 *{box-sizing:border-box}
-body{ user-select:none; }
 
 body{
   margin:0;
@@ -18,7 +17,10 @@ body{
   background:var(--bg);
   font-family:'Roboto',system-ui,Arial,sans-serif;
   color:#111;
+  user-select:none;
 }
+
+button{ font-family:inherit; font-size:inherit; }
 
 .card{
   background:var(--card);
@@ -161,7 +163,7 @@ input:focus{ border-color:#111; }
   color:#aaa;
   pointer-events:none;
 }
-.customRateInput::placeholder{ font-size:14px; }
+.customRateInput::placeholder{ font-size:16px; }
 .customRateInput{
   width:74px;
   padding:12px 22px 12px 10px;
