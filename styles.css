@@ -20,7 +20,7 @@ body{
   user-select:none;
 }
 
-button{ font-family:inherit; font-size:inherit; }
+button{ font-family:inherit; font-size:inherit; color:inherit; }
 
 .card{
   background:var(--card);
