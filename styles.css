@@ -240,25 +240,24 @@ input:focus{ border-color:#111; }
 
 /* Rechner Bubble */
 .bubble{
-  position:fixed;
-  bottom:22px;
-  right:22px;
-  width:58px;
-  height:58px;
-  border-radius:50%;
-  border:2px solid #111;
+  position:absolute;
+  bottom:12px;
+  right:54px;
+  width:34px;
+  height:34px;
+  border:1px solid #ccc;
+  border-radius:6px;
   background:#fff;
+  cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  cursor:pointer;
-  box-shadow:0 14px 32px var(--shadow);
-  transition:.15s ease;
-  z-index:20;
+  transition:.12s ease;
+  padding:0;
 }
-.bubble:hover{ transform:translateY(-3px) scale(1.03); }
-.bubble:active{ transform:translateY(0) scale(1.01); opacity:.92; }
-.bubble img{ width:28px; }
+.bubble:hover{ border-color:#111; transform:translateY(-1px); }
+.bubble:active{ transform:translateY(0); opacity:.85; }
+.bubble svg{ width:16px; height:16px; display:block; }
 
 /* Rechner Modal */
 .overlay{
