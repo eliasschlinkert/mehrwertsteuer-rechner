@@ -124,7 +124,14 @@ priceIn.addEventListener("input", () => {
 
 // Preisfeld: nur Ziffern, Komma und Punkt; max. 6 Ziffern
 priceIn.addEventListener("beforeinput", (e) => {
-  if (e.data && !/^[0-9,.]+$/.test(e.data)) { e.preventDefault(); shake(priceIn); }
+  if (e.data && !/^[0-9,.]+$/.test(e.data)) { e.preventDefault(); shake(priceIn); return; }
+  if (e.data === "0") {
+    const cursorPos = priceIn.selectionStart ?? priceIn.value.length;
+    if (countDigits(priceIn.value.substring(0, cursorPos)) === 0) {
+      e.preventDefault();
+      shake(priceIn);
+    }
+  }
 });
 
 // e.key.length > 1 → Sonder-/Steuertaste (Shift, Enter, Backspace, F1 …) → ignorieren
@@ -138,6 +145,12 @@ priceIn.addEventListener("keydown", (e) => {
     return;
   }
   if (/^[0-9]$/.test(e.key)) {
+    const textBeforeCursor = priceIn.value.substring(0, priceIn.selectionStart);
+    if (e.key === "0" && countDigits(textBeforeCursor) === 0) {
+      e.preventDefault();
+      shake(priceIn);
+      return;
+    }
     const selText    = priceIn.value.substring(priceIn.selectionStart, priceIn.selectionEnd);
     const netDigits  = countDigits(priceIn.value) - countDigits(selText) + 1;
     if (netDigits > MAX_DIGITS) {
@@ -165,7 +178,14 @@ r7.addEventListener("click",  () => setRate(0.07, r7,  r19));
 r19.addEventListener("click", () => setRate(0.19, r19, r7));
 
 customRateInput.addEventListener("beforeinput", (e) => {
-  if (e.data && !/^[0-9]+$/.test(e.data)) { e.preventDefault(); shake(customRateWrap); }
+  if (e.data && !/^[0-9]+$/.test(e.data)) { e.preventDefault(); shake(customRateWrap); return; }
+  if (e.data === "0") {
+    const cursorPos = customRateInput.selectionStart ?? customRateInput.value.length;
+    if (customRateInput.value.substring(0, cursorPos).length === 0) {
+      e.preventDefault();
+      shake(customRateWrap);
+    }
+  }
 });
 
 // Custom-Steuersatz: nur Ziffern, max 3 Zeichen
@@ -178,8 +198,14 @@ customRateInput.addEventListener("keydown", (e) => {
     shake(customRateWrap);
     return;
   }
-  // Würde 4. Stelle entstehen? (Selektion berücksichtigen)
+  // Keine führende 0
   const selLen = customRateInput.selectionEnd - customRateInput.selectionStart;
+  if (e.key === "0" && customRateInput.value.length - selLen === 0) {
+    e.preventDefault();
+    shake(customRateWrap);
+    return;
+  }
+  // Würde 4. Stelle entstehen? (Selektion berücksichtigen)
   if (customRateInput.value.length - selLen >= 3) {
     e.preventDefault();
     shake(customRateWrap);
@@ -234,6 +260,7 @@ copyBtn.addEventListener("click", () => {
 // ---------- Taschenrechner ----------
 const overlay   = document.getElementById("overlay");
 const display   = document.getElementById("calcDisplay");
+const calcEl    = document.querySelector(".calc");
 const openCalc  = document.getElementById("openCalc");
 const insertBtn = document.getElementById("insert");
 
@@ -360,6 +387,11 @@ function calcPress(key) {
     return;
   }
 
+  if (key === "0" && expr === "") {
+    shake(display);
+    return;
+  }
+
   expr += key;
   expr = sanitize(expr);
   lastWasEquals = false;
@@ -397,6 +429,7 @@ window.addEventListener("keydown", (e) => {
     if ("+-*/".includes(k))       { e.preventDefault(); calcPress(k); return; }
     if (k === "," || k === ".")   { e.preventDefault(); calcPress(","); return; }
     if (k === "(" || k === ")")   { e.preventDefault(); calcPress(k); return; }
+    if (k.length === 1) { e.preventDefault(); shake(calcEl); }
     return;
   }
 
