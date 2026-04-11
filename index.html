@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>MwSt.-Rechner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="webicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="card">
+  <div class="grid">
+
+    <div class="left">
+      <div>
+        <label for="priceIn">Preis (Eingabe)</label>
+        <div class="inputRow">
+          <input id="priceIn" placeholder="z.B. 5000" autocomplete="off" inputmode="decimal" autofocus>
+          <button class="clearBtn" id="clearAll" type="button" title="Eingabe & Ausgabe löschen" aria-label="Löschen">
+            <img src="eimer.png" alt="">
+          </button>
+        </div>
+        <div class="inputError" id="priceError">Maximal 6 Ziffern erlaubt</div>
+      </div>
+
+      <div>
+        <label>MwSt.-Satz</label>
+        <div class="rateBox">
+          <div class="customRateWrap">
+            <input class="customRateInput" id="customRate" placeholder="?" inputmode="numeric" maxlength="3" autocomplete="off" aria-label="Eigener Steuersatz in Prozent">
+          </div>
+          <button class="rateBtn" id="r7" type="button" aria-pressed="false">7%</button>
+          <button class="rateBtn" id="r19" type="button" aria-pressed="false">19%</button>
+        </div>
+      </div>
+
+      <div class="actionBtns">
+        <button class="btn" id="add" type="button" aria-pressed="false">MwSt. hinzufügen</button>
+        <button class="btn" id="remove" type="button" aria-pressed="false">MwSt. entfernen</button>
+      </div>
+    </div>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <div class="right">
+      <div class="modeLabel" id="modeLabel"></div>
+      <div class="big" id="result">0 €</div>
+      <div class="vatLine">davon sind <b id="vat">0 €</b> MwSt.</div>
+      <button class="copyBtn" id="copyBtn" type="button" title="Ergebnis kopieren" aria-label="Ergebnis kopieren">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Als echtes <button>-Element braucht es kein role="button" oder tabindex mehr -->
+<button class="bubble" id="openCalc" title="Taschenrechner" aria-label="Taschenrechner öffnen">
+  <img src="rechner.png" alt="">
+</button>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Taschenrechner">
+  <div class="calc">
+    <div class="display" id="calcDisplay" aria-live="polite">0</div>
+
+    <div class="keys">
+      <button class="key" data-key="7" type="button">7</button>
+      <button class="key" data-key="8" type="button">8</button>
+      <button class="key" data-key="9" type="button">9</button>
+      <button class="key op" data-key="/" type="button">÷</button>
+
+      <button class="key" data-key="4" type="button">4</button>
+      <button class="key" data-key="5" type="button">5</button>
+      <button class="key" data-key="6" type="button">6</button>
+      <button class="key op" data-key="*" type="button">×</button>
+
+      <button class="key" data-key="1" type="button">1</button>
+      <button class="key" data-key="2" type="button">2</button>
+      <button class="key" data-key="3" type="button">3</button>
+      <button class="key op" data-key="-" type="button">−</button>
+
+      <button class="key wide" data-key="0" type="button">0</button>
+      <button class="key" data-key="," type="button">,</button>
+      <button class="key op" data-key="+" type="button">+</button>
+
+      <button class="key wide op" data-key="C" type="button">C</button>
+      <button class="key wide op" data-key="=" type="button">=</button>
+    </div>
+
+    <div class="footer">
+      <button class="insert" id="insert" type="button">in MwSt. Rechner einfügen</button>
+    </div>
+  </div>
+</div>
+
+<div class="credit" id="credit">
+  <span class="credit-before">made with&nbsp;&nbsp;</span><span class="credit-heart" id="creditHeart">❤️</span><span class="credit-after">&nbsp;&nbsp;by <a href="https://www.eliasslt.de" target="_blank" rel="noopener noreferrer">elias</a></span>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
