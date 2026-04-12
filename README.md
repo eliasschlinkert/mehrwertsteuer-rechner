@@ -13,7 +13,7 @@ Funktioniert sowohl auf dem Desktop als auch im mobilen Browser.
 Repository klonen und `index.html` in einem modernen Browser öffnen:
 
 ```
-git clone https://github.com/eliasschlinkert/german-vat-calculator.git
+https://github.com/eliasschlinkert/mehrwertsteuer-rechner.git
 ```
 
 Keine weitere Installation oder Abhängigkeiten erforderlich.
