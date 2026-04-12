@@ -1,12 +1,10 @@
-// ---------- Hilfsfunktionen ----------
 function shake(el) {
   el.classList.remove("shake");
-  void el.offsetWidth; // Reflow erzwingt Neustart der Animation
+  void el.offsetWidth;
   el.classList.add("shake");
   el.addEventListener("animationend", () => el.classList.remove("shake"), { once: true });
 }
 
-// ---------- MwSt ----------
 const priceIn        = document.getElementById("priceIn");
 const priceError     = document.getElementById("priceError");
 const result         = document.getElementById("result");
@@ -19,8 +17,8 @@ const removeBtn      = document.getElementById("remove");
 const customRateInput = document.getElementById("customRate");
 const customRateWrap  = customRateInput.parentElement;
 
-let rate = null;  // kein Satz vorausgewählt
-let mode = null;  // kein Modus vorausgewählt
+let rate = null;
+let mode = null;
 
 const nf = new Intl.NumberFormat("de-DE", { style:"currency", currency:"EUR" });
 
@@ -48,7 +46,6 @@ function resetAll() {
 }
 
 function parseEuroInput(s) {
-  // erlaubt 1.234,56 | 1234,56 | 1234.56
   const cleaned = (s || "")
     .trim()
     .replace(/\s/g, "")
@@ -63,7 +60,6 @@ function round2(n) {
 }
 
 function calcVat() {
-  // Kein Steuersatz oder kein Modus gewählt oder leere Eingabe → Standardzustand
   if (rate === null || mode === null || priceIn.value.trim() === "") {
     result.textContent = "0 €";
     vat.textContent = "0 €";
@@ -99,7 +95,6 @@ function setRate(newRate, activeBtn, inactiveBtn) {
   activeBtn.setAttribute("aria-pressed", "true");
   inactiveBtn.classList.remove("active");
   inactiveBtn.setAttribute("aria-pressed", "false");
-  // Custom-Feld leeren und deaktivieren
   customRateInput.value = "";
   customRateInput.classList.remove("active");
   calcVat();
@@ -122,19 +117,53 @@ priceIn.addEventListener("input", () => {
   calcVat();
 });
 
-// Preisfeld: nur Ziffern, Komma und Punkt; max. 6 Ziffern
 priceIn.addEventListener("beforeinput", (e) => {
-  if (e.data && !/^[0-9,.]+$/.test(e.data)) { e.preventDefault(); shake(priceIn); return; }
+  if (!e.data) return;
+
+  if (e.data === ".") {
+    e.preventDefault();
+    const s = priceIn.selectionStart ?? priceIn.value.length;
+    const f = priceIn.selectionEnd   ?? priceIn.value.length;
+    if (countDigits(priceIn.value.substring(0, s)) === 0) { shake(priceIn); return; }
+    if (priceIn.value.includes(",")) { shake(priceIn); return; }
+    priceIn.value = priceIn.value.substring(0, s) + "," + priceIn.value.substring(f);
+    priceIn.setSelectionRange(s + 1, s + 1);
+    if (countDigits(priceIn.value) < MAX_DIGITS) hidePriceError();
+    calcVat();
+    return;
+  }
+
+  if (!/^[0-9,]+$/.test(e.data)) { e.preventDefault(); shake(priceIn); return; }
+
+  if (e.data === ",") {
+    const cursorPos = priceIn.selectionStart ?? priceIn.value.length;
+    if (countDigits(priceIn.value.substring(0, cursorPos)) === 0) { e.preventDefault(); shake(priceIn); return; }
+  }
+
+  if (e.data === "," && priceIn.value.includes(",")) { e.preventDefault(); shake(priceIn); return; }
+
   if (e.data === "0") {
     const cursorPos = priceIn.selectionStart ?? priceIn.value.length;
     if (countDigits(priceIn.value.substring(0, cursorPos)) === 0) {
       e.preventDefault();
       shake(priceIn);
+      return;
+    }
+  }
+
+  if (/^[0-9]$/.test(e.data)) {
+    const val      = priceIn.value;
+    const selStart = priceIn.selectionStart ?? val.length;
+    const selEnd   = priceIn.selectionEnd   ?? val.length;
+    const commaIdx = val.indexOf(",");
+    if (commaIdx !== -1 && selStart > commaIdx) {
+      const afterCommaDigits = (val.substring(commaIdx + 1).match(/[0-9]/g) || []).length;
+      const selDigits        = (val.substring(selStart, selEnd).match(/[0-9]/g) || []).length;
+      if (afterCommaDigits - selDigits + 1 > 2) { e.preventDefault(); shake(priceIn); return; }
     }
   }
 });
 
-// e.key.length > 1 → Sonder-/Steuertaste (Shift, Enter, Backspace, F1 …) → ignorieren
 priceIn.addEventListener("keydown", (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === "Dead") { e.preventDefault(); shake(priceIn); return; }
@@ -144,18 +173,38 @@ priceIn.addEventListener("keydown", (e) => {
     shake(priceIn);
     return;
   }
+  if (e.key === "." || e.key === ",") {
+    if (countDigits(priceIn.value.substring(0, priceIn.selectionStart)) === 0) {
+      e.preventDefault(); shake(priceIn); return;
+    }
+    return;
+  }
   if (/^[0-9]$/.test(e.key)) {
-    const textBeforeCursor = priceIn.value.substring(0, priceIn.selectionStart);
+    const val      = priceIn.value;
+    const selStart = priceIn.selectionStart;
+    const selEnd   = priceIn.selectionEnd;
+    const textBeforeCursor = val.substring(0, selStart);
     if (e.key === "0" && countDigits(textBeforeCursor) === 0) {
       e.preventDefault();
       shake(priceIn);
       return;
     }
-    const selText    = priceIn.value.substring(priceIn.selectionStart, priceIn.selectionEnd);
-    const netDigits  = countDigits(priceIn.value) - countDigits(selText) + 1;
+    const selText   = val.substring(selStart, selEnd);
+    const netDigits = countDigits(val) - countDigits(selText) + 1;
     if (netDigits > MAX_DIGITS) {
       e.preventDefault();
       showPriceError();
+      return;
+    }
+    const commaIdx = val.indexOf(",");
+    if (commaIdx !== -1 && selStart > commaIdx) {
+      const afterCommaDigits = (val.substring(commaIdx + 1).match(/[0-9]/g) || []).length;
+      const selDigits        = (selText.match(/[0-9]/g) || []).length;
+      if (afterCommaDigits - selDigits + 1 > 2) {
+        e.preventDefault();
+        shake(priceIn);
+        return;
+      }
     }
   }
 });
@@ -188,7 +237,6 @@ customRateInput.addEventListener("beforeinput", (e) => {
   }
 });
 
-// Custom-Steuersatz: nur Ziffern, max 3 Zeichen
 customRateInput.addEventListener("keydown", (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === "Dead") { e.preventDefault(); shake(customRateWrap); return; }
@@ -198,14 +246,12 @@ customRateInput.addEventListener("keydown", (e) => {
     shake(customRateWrap);
     return;
   }
-  // Keine führende 0
   const selLen = customRateInput.selectionEnd - customRateInput.selectionStart;
   if (e.key === "0" && customRateInput.value.length - selLen === 0) {
     e.preventDefault();
     shake(customRateWrap);
     return;
   }
-  // Würde 4. Stelle entstehen? (Selektion berücksichtigen)
   if (customRateInput.value.length - selLen >= 3) {
     e.preventDefault();
     shake(customRateWrap);
@@ -240,12 +286,11 @@ clearAll.addEventListener("click", () => {
   priceIn.focus();
 });
 
-// Copy-Button: kopiert Ergebnis ohne Punkte und €-Zeichen, nur Komma bleibt
-const copyBtn = document.getElementById("copyBtn");
+const copyBtn   = document.getElementById("copyBtn");
+const copyToast = document.getElementById("copyToast");
 let copyTimeout = null;
 
 copyBtn.addEventListener("click", () => {
-  // Punkte (Tausendertrennzeichen) und €-Zeichen entfernen, Komma behalten
   const raw = result.textContent.replace(/\./g, "").replace(/[€\s]/g, "");
   if (raw === "0" || raw === "") return;
 
@@ -254,10 +299,13 @@ copyBtn.addEventListener("click", () => {
     copyBtn.classList.add("copied");
     clearTimeout(copyTimeout);
     copyTimeout = setTimeout(() => copyBtn.classList.remove("copied"), 1500);
+
+    copyToast.classList.remove("show");
+    void copyToast.offsetWidth;
+    copyToast.classList.add("show");
   }).catch(() => {});
 });
 
-// ---------- Taschenrechner ----------
 const overlay   = document.getElementById("overlay");
 const display   = document.getElementById("calcDisplay");
 const calcEl    = document.querySelector(".calc");
@@ -281,7 +329,6 @@ function closeCalculator() {
 }
 
 function sanitize(s) {
-  // nur Mathezeichen erlaubt — verhindert Code-Injection
   return s.replace(/[^0-9+\-*/().]/g, "");
 }
 
@@ -292,13 +339,11 @@ function lastNumberChunk() {
 
 function appendDecimal() {
   const chunk = lastNumberChunk();
-  if (chunk.includes(".")) return; // schon ein Dezimalpunkt in dieser Zahl
+  if (chunk.includes(".")) return;
   if (chunk === "") expr += "0";
   expr += ".";
 }
 
-// Sicherer mathematischer Ausdruck-Evaluator ohne eval() / Function()
-// Implementiert als rekursiver Abstiegs-Parser (Operator-Vorrang: *, / vor +, -)
 function safeEval(expression) {
   const cleaned = sanitize(expression).replace(/[+\-*/.]$/, "");
   if (!cleaned) return 0;
@@ -371,7 +416,6 @@ function calcPress(key) {
   }
 
   if (key === "=") {
-    // zweites "=" nach Berechnung → Ergebnis in MwSt-Rechner übernehmen
     if (lastWasEquals) { insertResultIntoVat(); return; }
     expr = String(round2(safeEval(expr)));
     lastWasEquals = true;
@@ -402,7 +446,6 @@ document.querySelectorAll(".key").forEach(btn => {
   btn.addEventListener("click", () => calcPress(btn.dataset.key));
 });
 
-// <button> behandelt Enter/Space nativ — kein eigener keydown-Handler nötig
 openCalc.addEventListener("click", openCalculator);
 
 overlay.addEventListener("click", (e) => {
@@ -411,7 +454,6 @@ overlay.addEventListener("click", (e) => {
 
 insertBtn.addEventListener("click", insertResultIntoVat);
 
-// ---------- Keyboard / Numpad / ESC / Backspace ----------
 window.addEventListener("keydown", (e) => {
   if (isCalcOpen()) {
     const k = e.key;
@@ -433,7 +475,6 @@ window.addEventListener("keydown", (e) => {
     return;
   }
 
-  // Rechner ist NICHT offen: ESC löscht alles
   if (e.key === "Escape") {
     e.preventDefault();
     resetAll();
@@ -444,7 +485,6 @@ window.addEventListener("keydown", (e) => {
 resetAll();
 priceIn.focus();
 
-// ---------- Credit ----------
 const credit      = document.getElementById("credit");
 const creditHeart = document.getElementById("creditHeart");
 

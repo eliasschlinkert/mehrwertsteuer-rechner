@@ -6,6 +6,8 @@ Keine Installation, keine Abhängigkeiten – einfach öffnen und loslegen.
 
 Funktioniert sowohl auf dem Desktop als auch im mobilen Browser.
 
+---
+
 ## Verwendung
 
 Repository klonen und `index.html` in einem modernen Browser öffnen:
@@ -15,3 +17,11 @@ git clone https://github.com/eliasschlinkert/german-vat-calculator.git
 ```
 
 Keine weitere Installation oder Abhängigkeiten erforderlich.
+
+Bei Bedarf kann zusätzlich ein lokaler Webserver aufgesetzt werden.
+
+---
+
+## Lizenz
+
+[MIT](LICENSE)

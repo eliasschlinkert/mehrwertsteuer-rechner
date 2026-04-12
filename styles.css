@@ -125,7 +125,6 @@ input:focus{ border-color:#111; }
   padding:14px;
   background:#111;
   color:#fff;
-  /* border: 2px solid sorgt dafür, dass kein Layout-Shift beim Active-Toggle entsteht */
   border:2px solid #111;
   border-radius:4px;
   font-weight:700;
@@ -136,7 +135,6 @@ input:focus{ border-color:#111; }
 .btn:active{ transform: translateY(0); opacity:.9; }
 .btn.active{ border-color:var(--bg); }
 
-/* Wackel-Animation */
 @keyframes shake{
   0%,100%{ transform:translateX(0); }
   18%     { transform:translateX(-6px); }
@@ -147,7 +145,6 @@ input:focus{ border-color:#111; }
 }
 .shake{ animation:shake .32s ease; }
 
-/* Custom-Steuersatz-Feld */
 .customRateWrap{
   position:relative;
   display:inline-flex;
@@ -216,6 +213,28 @@ input:focus{ border-color:#111; }
   word-break:break-all;
 }
 
+.copy-toast{
+  position:absolute;
+  bottom:12px;
+  right:54px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  font-size:12px;
+  font-weight:700;
+  color:#555;
+  pointer-events:none;
+  opacity:0;
+  white-space:nowrap;
+}
+@keyframes toastPop{
+  0%   { opacity:0;   transform:translateX(4px); }
+  15%  { opacity:.55; transform:translateX(0); }
+  70%  { opacity:.55; transform:translateX(0); }
+  100% { opacity:0;   transform:translateX(0); }
+}
+.copy-toast.show{ animation:toastPop 1s ease forwards; }
+
 .copyBtn{
   position:absolute;
   bottom:12px;
@@ -238,11 +257,10 @@ input:focus{ border-color:#111; }
 .copyBtn.copied{ border-color:#4caf50; background:#f0fff0; }
 .copyBtn.copied svg{ color:#4caf50; }
 
-/* Rechner Bubble */
 .bubble{
   position:absolute;
-  bottom:12px;
-  right:54px;
+  bottom:54px;
+  right:12px;
   width:34px;
   height:34px;
   border:1px solid #ccc;
@@ -257,9 +275,8 @@ input:focus{ border-color:#111; }
 }
 .bubble:hover{ border-color:#111; transform:translateY(-1px); }
 .bubble:active{ transform:translateY(0); opacity:.85; }
-.bubble svg{ width:16px; height:16px; display:block; }
+.bubble svg{ width:20px; height:20px; display:block; }
 
-/* Rechner Modal */
 .overlay{
   position:fixed;
   inset:0;
@@ -349,7 +366,6 @@ input:focus{ border-color:#111; }
   .rateBtn{ padding:12px 16px; }
 }
 
-/* Credit */
 .credit{
   position:fixed;
   bottom:max(22px, env(safe-area-inset-bottom, 22px));
@@ -357,8 +373,8 @@ input:focus{ border-color:#111; }
   transform:translateX(-50%);
   width:fit-content;
   white-space:nowrap;
-  padding:10px 22px;
-  font-size:11px;
+  padding:14px 18px;
+  font-size:14px;
   opacity:.7;
   user-select:none;
   background:rgba(255,255,255,0);
@@ -378,6 +394,7 @@ input:focus{ border-color:#111; }
   cursor:default;
 }
 @media(max-width:900px){
+  .credit{ font-size:13px; padding:12px 16px; }
   .credit-heart{ font-size:36px; cursor:pointer; }
 }
 @keyframes heartbeat{
@@ -406,7 +423,7 @@ input:focus{ border-color:#111; }
   }
   .credit:hover .credit-heart{ transform:scale(1.4); }
   .credit:hover .credit-before,
-  .credit:hover .credit-after{ max-width:160px; opacity:1; }
+  .credit:hover .credit-after{ max-width:90px; opacity:1; }
 }
 .credit-heart.beating{ animation:heartbeat 1.1s ease-in-out; transition:none; }
 .credit.expanded{
@@ -417,7 +434,7 @@ input:focus{ border-color:#111; }
 }
 .credit.expanded .credit-heart{ transform:scale(1.4); }
 .credit.expanded .credit-before,
-.credit.expanded .credit-after{ max-width:160px; opacity:1; }
+.credit.expanded .credit-after{ max-width:90px; opacity:1; }
 .credit-after a{
   color:#e8843a;
   font-weight:bold;
