@@ -97,10 +97,22 @@ function setRate(newRate, activeBtn, inactiveBtn) {
   inactiveBtn.setAttribute("aria-pressed", "false");
   customRateInput.value = "";
   customRateInput.classList.remove("active");
+  updateModeLabel();
   calcVat();
 }
 
 const modeLabel = document.getElementById("modeLabel");
+
+function updateModeLabel() {
+  if (mode === null) { modeLabel.textContent = ""; return; }
+  const verb = mode === "add" ? "hinzugefügt" : "abgezogen";
+  const isCustom = customRateInput.value !== "" &&
+                   !r7.classList.contains("active") &&
+                   !r19.classList.contains("active");
+  modeLabel.textContent = isCustom
+    ? Math.round(rate * 100) + "% " + verb
+    : "MwSt. " + verb;
+}
 
 function setMode(newMode, activeBtn, inactiveBtn) {
   mode = newMode;
@@ -108,7 +120,7 @@ function setMode(newMode, activeBtn, inactiveBtn) {
   activeBtn.setAttribute("aria-pressed", "true");
   inactiveBtn.classList.remove("active");
   inactiveBtn.setAttribute("aria-pressed", "false");
-  modeLabel.textContent = newMode === "add" ? "MwSt. hinzugefügt" : "MwSt. abgezogen";
+  updateModeLabel();
   calcVat();
 }
 
@@ -266,6 +278,7 @@ customRateInput.addEventListener("input", () => {
   if (!customRateInput.value) {
     customRateInput.classList.remove("active");
     rate = null;
+    updateModeLabel();
     calcVat();
     return;
   }
@@ -274,6 +287,7 @@ customRateInput.addEventListener("input", () => {
     customRateInput.classList.add("active");
     r7.classList.remove("active");  r7.setAttribute("aria-pressed", "false");
     r19.classList.remove("active"); r19.setAttribute("aria-pressed", "false");
+    updateModeLabel();
     calcVat();
   }
 });
