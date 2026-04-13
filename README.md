@@ -25,3 +25,7 @@ Bei Bedarf kann zusätzlich ein lokaler Webserver aufgesetzt werden.
 ## Lizenz
 
 [MIT](LICENSE)
+
+---
+
+Konzipiert und umgesetzt von Elias Schlinkert. Bei der Umsetzung wurde Claude als Coding-Assistent eingesetzt.
