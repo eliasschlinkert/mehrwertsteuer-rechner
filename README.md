@@ -22,10 +22,10 @@ Bei Bedarf kann zusätzlich ein lokaler Webserver aufgesetzt werden.
 
 ---
 
-## Lizenz
-
-[MIT](LICENSE)
+Konzipiert, umgesetzt und geprüft von Menschen. Umsetzung unterstützt von Claude.
 
 ---
 
-Konzipiert und umgesetzt von Elias Schlinkert. Bei der Umsetzung wurde Claude als Coding-Assistent eingesetzt.
+## Lizenz
+
+[MIT](LICENSE)
