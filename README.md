@@ -10,13 +10,11 @@ Funktioniert sowohl auf dem Desktop als auch im mobilen Browser.
 
 ## Verwendung
 
-Repository klonen und `index.html` in einem modernen Browser öffnen:
+Repository klonen und einfach `index.html` in einem beliebigen Browser öffnen:
 
 ```
 git clone https://github.com/eliasschlinkert/mehrwertsteuer-rechner.git
 ```
-
-Keine weitere Installation oder Abhängigkeiten erforderlich.
 
 Bei Bedarf kann zusätzlich ein lokaler Webserver aufgesetzt werden.
 
